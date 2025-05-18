@@ -11,7 +11,7 @@
 <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
     <h5 class="my-0 mr-md-auto font-weight-normal">Skystore</h5>
     <nav class="ms-5">
-        <a class="p-2 btn btn-outline-primary" href="/">Каталог</a>
+        <a class="p-2 btn btn-outline-primary" href="/home">Каталог</a>
         <a class="p-2 btn btn-outline-primary" href="/contacts/">Контакты</a>
     </nav>
 </div>
@@ -37,6 +37,12 @@
                         <tr>
                             <td class="w-25">Адрес</td>
                             <td>Redmond,WA,98052-6399</td>
+                        </tr>
+                        <tr>
+                            {% for contact in contacts %}
+                                <td class="w-25">{{ contact.contact_name }}</td>
+                                <td>{{ contact.phone_number }}</td>
+                            {% endfor %}
                         </tr>
                     </table>
                 </div>
