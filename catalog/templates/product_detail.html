@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load my_tags %}
+
+{% block title %}{{ product.product_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-4">
+        <img src='{{ product.image_product | media_filter }}' class="img-thumbnail" alt="..." style="width: 400px; height: auto;">
+    </div>
+    <div class="col">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">Наименование</th>
+                <td>{{ product.product_name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Описание</th>
+                <td>{{ product.description }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Категория</th>
+                <td>{{ product.category }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Цена</th>
+                <td>{{ product.price }} р.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
