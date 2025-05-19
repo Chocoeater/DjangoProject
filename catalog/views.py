@@ -1,18 +1,22 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from catalog.models import Contact, Product
+from catalog.forms import ProductForm
+from django.core.paginator import Paginator
 
 
 def home(request):
     last_products = Product.objects.order_by('-created_at')[:5]
-
     print('Последние 5 продуктов:')
     for product in last_products:
         print(product.id, product.product_name, product.created_at)
 
     products = Product.objects.all()
+    paginator = Paginator(products, 4) # задаем количество продуктов на главной
+    number_of_page = request.GET.get('page') # получаем номер текущей страницы
+    page_obj = paginator.get_page(number_of_page) # получаем страницу с товарами
     context = {
-        'products': products,
+        'page_obj': page_obj,
     }
     return render(request, 'home.html', context=context)
 
@@ -32,3 +36,13 @@ def product_detail(request, pk):
     }
 
     return render(request, 'product_detail.html', context)
+
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # return redirect('product_success')  # например, страница с подтверждением
+    else:
+        form = ProductForm()
+    return render(request, 'add_product.html', {'form': form})
