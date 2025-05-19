@@ -37,12 +37,18 @@ def product_detail(request, pk):
 
     return render(request, 'product_detail.html', context)
 
+
+def success_add(request):
+    return render(request, 'success_add.html')
+
 def add_product(request):
     if request.method == 'POST':
-        form = ProductForm(request.POST)
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            # return redirect('product_success')  # например, страница с подтверждением
+            return render(request, 'success_add.html')
+            # return HttpResponse("Продукт добавлен!")
     else:
         form = ProductForm()
     return render(request, 'add_product.html', {'form': form})
+
