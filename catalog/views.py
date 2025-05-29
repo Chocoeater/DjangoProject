@@ -1,12 +1,10 @@
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from catalog.models import Contact, Product
-from catalog.forms import ProductForm, ContactForm
-from django.core.paginator import Paginator
+from catalog.forms import ProductForm
 from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 
 
 class ProductListView(ListView):
