@@ -29,7 +29,7 @@
                             <div class="btn-group">
                                 <a href="{% url 'blog:record_detail' record.pk %}" class="btn btn-primary my-2">Посмотреть</a>
                             </div>
-                            <small class="text-body-secondary">Просмотров: 10</small></div>
+                            <small class="text-body-secondary">Просмотров: {{ record.number_of_views }}</small></div>
                     </div>
                 </div>
             </div>
