@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from blog.models import BlogRecord
-from django.urls.base import reverse_lazy
+from django.urls.base import reverse_lazy, reverse
 from blog.forms import BlogRecordForm
 # Create your views here.
 
@@ -27,7 +27,9 @@ class BlogRecordUpdateView(UpdateView):
     model = BlogRecord
     template_name = 'record_update.html'
     form_class = BlogRecordForm
-    success_url = reverse_lazy('blog:records_list')
+
+    def get_success_url(self):
+        return reverse('blog:record_detail', kwargs={'pk': self.object.pk})
 
 class BlogRecordDeleteView(DeleteView):
     model = BlogRecord
