@@ -6,7 +6,11 @@
     <div class="col-1">
     </div>
     <div class="col-4">
-        <img src='{{ record.preview.url }}' class="img-thumbnail" alt="..." style="width: 400px; height: auto;">
+        {% if record.preview %}
+        <img src="{{ record.preview.url }}" alt="{{ record.title }}" style="width: 400px; height: auto;">
+        {% else %}
+        <p>Нет изображения</p>
+        {% endif %}
     </div>
     <div class="card col" style="width: 18rem;">
         <ul class="list-group list-group-flush">

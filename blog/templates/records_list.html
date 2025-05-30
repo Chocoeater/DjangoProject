@@ -17,7 +17,11 @@
             {% for record in records %}
             <div class="col">
                 <div class="card shadow-sm">
-                    <img src="{{ record.preview.url }}" class="card-img-top" alt="...">
+                    {% if record.preview %}
+                    <img src="{{ record.preview.url }}" alt="{{ record.title }}">
+                    {% else %}
+                    <p>Нет изображения</p>
+                    {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ record.title }}</h5>
                         <p class="card-text">{{ record.content | truncatechars:100}}</p>
