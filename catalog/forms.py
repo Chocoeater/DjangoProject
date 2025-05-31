@@ -19,3 +19,5 @@ class ProductForm(forms.ModelForm):
             elif isinstance(self.fields[field].widget, forms.ClearableFileInput):
                 css_class = 'form-control' # если загрузка файла
             self.fields[field].widget.attrs['class'] = css_class # добавляем классы к базовой html форме
+
+

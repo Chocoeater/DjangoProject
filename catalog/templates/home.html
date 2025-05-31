@@ -12,7 +12,7 @@
 
 {% block content %}
 <div class="row text-center">
-    {% for product in page_obj %}
+    {% for product in products %}
     <div class="col-3 mb-1">
         <div class="card" style="width: 18rem;">
             <img src="{{ product.image_product | media_filter }}" class="card-img-top" alt="...">
@@ -69,3 +69,4 @@
     </ul>
 </nav>
 {% endblock %}
+

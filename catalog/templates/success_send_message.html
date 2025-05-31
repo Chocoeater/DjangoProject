@@ -4,8 +4,9 @@
 
 {% block content %}
 <div class=" row text-center">
-    <h1>Товар успешно добавлен!</h1>
+    {% for message in messages %}
+    <h1>{{ message }}</h1>
     <a href="{% url 'catalog:product_list'%}" class="btn btn-primary m-1">В каталог</a>
-    <a href="{% url 'catalog:create_product' %}" class="btn btn-primary m-1">Добавить еще</a>
+    {% endfor %}
 </div>
 {% endblock %}
