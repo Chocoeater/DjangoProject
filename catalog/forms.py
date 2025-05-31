@@ -20,6 +20,12 @@ class ProductForm(forms.ModelForm):
                 css_class = 'form-control' # если загрузка файла
             self.fields[field].widget.attrs['class'] = css_class # добавляем классы к базовой html форме
 
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+        if price is not None and price < 0:
+            raise forms.ValidationError('Цена не может иметь отрицательное значение')
+        return price
+
     def clean(self):
         cleaned_data = super().clean()
         product_name = cleaned_data.get('product_name', '').lower()
@@ -34,3 +40,4 @@ class ProductForm(forms.ModelForm):
 
         if found_words:
             raise forms.ValidationError(f'Обнаружены запрещенные слова: {", ".join(found_words)}')
+
