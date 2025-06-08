@@ -1,0 +1,15 @@
+<nav class="py-2 bg-body-tertiary border-bottom">
+    <div class="container d-flex flex-wrap">
+        <ul class="nav me-auto">
+            <li class="nav-item"><a href='{% url "mailing:home" %}' class="nav-link link-body-emphasis px-2"><h5>Главная</h5></a></li>
+            <li class="nav-item"><a href='{% url "catalog:product_list" %}' class="nav-link link-body-emphasis px-2"><h5>В магазин</h5></a></li>
+            <li class="nav-item"><a href='{% url "mailing:recipients_list" %}' class="nav-link link-body-emphasis px-2">Список получателей</a></li>
+            <li class="nav-item"><a href='{% url "mailing:recipient_create" %}' class="nav-link link-body-emphasis px-2 active">Создать получателя</a></li>
+            <li class="nav-item"><a href='{% url "mailing:messages_list" %}' class="nav-link link-body-emphasis px-2">Список сообщений</a></li>
+            <li class="nav-item"><a href='{% url "mailing:message_create" %}' class="nav-link link-body-emphasis px-2">Создать сообщение</a></li>
+            <li class="nav-item"><a href='{% url "mailing:mailings_list" %}' class="nav-link link-body-emphasis px-2">Список рассылок</a></li>
+            <li class="nav-item"><a href='{% url "mailing:mailing_create" %}' class="nav-link link-body-emphasis px-2">Создать рассылку</a></li>
+            <li class="nav-item"><a href='{% url "mailing:attempts_list" %}' class="nav-link link-body-emphasis px-2">Список попыток</a></li>
+        </ul>
+    </div>
+</nav>

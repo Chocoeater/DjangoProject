@@ -1,0 +1,21 @@
+{% extends 'mailing_base.html' %}
+
+{% block title %}Список получателей{% endblock %}
+
+{%block content %}
+<div class="row">
+    <div class="col-2"></div>
+    {% for recipient in recipients %}
+    <div class="card m-3" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">{{ recipient.full_name }}</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">{{ recipient.email }}</h6>
+            <p class="card-text">{{ recipient.comment | truncatechars:50}}</p>
+            <a href="{% url 'mailing:recipient' recipient.pk %}" class="card-link">Подробнее</a>
+            <a href="#" class="card-link">Another link</a>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="col-2"></div>
+</div>
+{% endblock %}

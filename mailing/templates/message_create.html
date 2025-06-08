@@ -1,0 +1,26 @@
+<style>
+    label {
+        font-weight: bold;
+    }
+</style>
+{% extends 'mailing_base.html' %}
+
+{% block title %}Создание получателя{% endblock %}
+
+{%block content %}
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="row text-center">
+                <div class="col">
+                    <button type="submit" value="input" class="btn btn-success">Создать</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-2"></div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'mailing_base.html' %}
+
+{% block title %}Список рассылок{% endblock %}
+
+
+{%block content %}
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col">
+        <div class="text-center col">
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-4"></div>
+</div>
+<div class="row">
+    <div class="col-2"></div>
+    {% for mailing in mailings %}
+    <div class="card m-3" style="width: 18rem;">
+        <div class="card-body">
+            <h2 class="card-title">{{ mailing.message.subject }}</h2>
+            {% for rec in mailing.recipient.all %}
+            <h5 class="card-title">{{ rec.full_name }}</h5>
+            {% endfor %}
+            <p class="card-subtitle mb-2 text-body-secondary">{{ mailing.status }}</p>
+            <a href="{% url 'mailing:mailing_detail' mailing.pk %}" class="card-link">Подробнее</a>
+            <form method="post" action="{% url 'mailing:mailing_run' mailing.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="card-link"
+                        style="background:none; border:none; padding:0; color:blue; text-decoration:underline; cursor:pointer;">
+                    Запустить
+                </button>
+            </form>
+            <form method="post" action="{% url 'mailing:mailing_status_update' mailing.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="card-link"
+                        style="background:none; border:none; padding:0; color:blue; text-decoration:underline; cursor:pointer;">
+                    Обновить статус
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="col-2"></div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'mailing_base.html' %}
+
+{% block title %}Рассылка №{{ mailing.pk }}{% endblock %}
+
+{%block content %}
+<div class="row">
+    <div class="col-2"></div>
+    <div class="card col mt-3">
+        <div class="card-header">
+            {% for rec in mailing.recipient.all %}
+            {{ rec.full_name }}
+            {% endfor %}
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">{{ mailing.start_time }}</li>
+            <li class="list-group-item">{{ mailing.end_time }}</li>
+            <li class="list-group-item">{{ mailing.status }}</li>
+            <li class="list-group-item">{{ mailing.message.subject }}</li>
+            <li class="list-group-item">{{ mailing.message.body }}</li>
+        </ul>
+    </div>
+    <div class="col-2"></div>
+</div>
+<div class="row text-center mt-3">
+    <div class="col-5"></div>
+    <div class="col">
+        <a href="{% url 'mailing:mailings_list' %}" type="button" class="btn btn-light">Назад</a>
+        <a href="{% url 'mailing:mailing_update' mailing.pk %}" type="button" class="btn btn-warning">Редактировать</a>
+        <a href="{% url 'mailing:mailing_delete' mailing.pk %}" type="button" class="btn btn-danger">Удалить</a>
+    </div>
+    <div class="col-5"></div>
+</div>
+{% endblock %}
