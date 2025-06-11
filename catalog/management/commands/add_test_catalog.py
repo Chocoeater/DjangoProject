@@ -1,9 +1,11 @@
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from catalog.models import Product, Category
+
+from catalog.models import Category, Product
+
 
 class Command(BaseCommand):
-    help = 'Add test products and categories to database'
+    help = "Add test products and categories to database"
 
     def handle(self, *args, **options):
         # Удаляем все данные
@@ -11,5 +13,5 @@ class Command(BaseCommand):
         Category.objects.all().delete()
 
         # Загружаем данные из фикстуры
-        call_command('loaddata', 'catalog_fixture.json')
-        self.stdout.write(self.style.SUCCESS('Successfully loaded data from fixture'))
+        call_command("loaddata", "catalog_fixture.json")
+        self.stdout.write(self.style.SUCCESS("Successfully loaded data from fixture"))

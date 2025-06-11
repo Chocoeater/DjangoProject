@@ -1,46 +1,65 @@
-
-from django.conf import settings
-from django.utils import timezone
-from django.core.mail import EmailMessage, get_connection
 from smtplib import SMTPException
 
+from django.conf import settings
+from django.core.mail import EmailMessage, get_connection
 from django.db import models
-from django.db.models import TextField
-from django.db.models import EmailField, CharField
-
+from django.db.models import CharField, EmailField, TextField
+from django.utils import timezone
 
 # Create your models here.
 
+
 class Recipient(models.Model):
-    email = EmailField(unique=True, verbose_name='Адрес электронной почты', help_text='Введите адрес электронной почты получателя.')
-    full_name = CharField(max_length=200, verbose_name='Ф.И.О.', help_text='Введите фамилию, имя и отчество (при наличии) получателя.')
-    comment = TextField(verbose_name='Комментарий', help_text='Введите комментарий к профилю получателя (не обязательно).', null=True, blank=True)
+    email = EmailField(
+        unique=True,
+        verbose_name="Адрес электронной почты",
+        help_text="Введите адрес электронной почты получателя.",
+    )
+    full_name = CharField(
+        max_length=200,
+        verbose_name="Ф.И.О.",
+        help_text="Введите фамилию, имя и отчество (при наличии) получателя.",
+    )
+    comment = TextField(
+        verbose_name="Комментарий",
+        help_text="Введите комментарий к профилю получателя (не обязательно).",
+        null=True,
+        blank=True,
+    )
+
 
 class Message(models.Model):
-    subject = CharField(max_length=200, verbose_name='Тема письма', help_text='Введите тему письма')
-    body = TextField(verbose_name='Тест письма', help_text='Введите текст письма')
+    subject = CharField(
+        max_length=200, verbose_name="Тема письма", help_text="Введите тему письма"
+    )
+    body = TextField(verbose_name="Тест письма", help_text="Введите текст письма")
+
 
 class Mailing(models.Model):
     STATUS_CHOICES = [
-        ('created', 'Cоздана'),
-        ('started', 'Запущена'),
-        ('ended', 'Завершена')
+        ("created", "Cоздана"),
+        ("started", "Запущена"),
+        ("ended", "Завершена"),
     ]
 
-    start_time = models.DateTimeField(verbose_name='Время начала')
-    end_time = models.DateTimeField(verbose_name='Время окончания')
-    status = models.CharField(choices=STATUS_CHOICES, default='created', verbose_name='Статус рассылки')
-    message = models.ForeignKey('Message', on_delete=models.CASCADE, verbose_name='Сообщение')
-    recipient = models.ManyToManyField('Recipient', verbose_name='Получатели')
+    start_time = models.DateTimeField(verbose_name="Время начала")
+    end_time = models.DateTimeField(verbose_name="Время окончания")
+    status = models.CharField(
+        choices=STATUS_CHOICES, default="created", verbose_name="Статус рассылки"
+    )
+    message = models.ForeignKey(
+        "Message", on_delete=models.CASCADE, verbose_name="Сообщение"
+    )
+    recipient = models.ManyToManyField("Recipient", verbose_name="Получатели")
 
     def update_status(self):
         now = timezone.now()
         if self.start_time <= now <= self.end_time:
-            self.status = 'started'
+            self.status = "started"
         elif now > self.end_time:
-            self.status = 'ended'
+            self.status = "ended"
         else:
-            self.status = 'created'
+            self.status = "created"
 
     # Для автоматического обновления статуса
     def save(self, *args, **kwargs):
@@ -55,36 +74,32 @@ class Mailing(models.Model):
                 body=self.message.body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 to=[rec.email],
-                connection=connection
+                connection=connection,
             )
 
         try:
             email.send()
             Attempt.objects.create(
                 mailing=self,
-                status='success',
-                answer_post_server='Письмо успешно отправлено'
+                status="success",
+                answer_post_server="Письмо успешно отправлено",
             )
         except SMTPException as e:
             Attempt.objects.create(
-                mailing=self,
-                status='fail',
-                answer_post_server=str(e)
+                mailing=self, status="fail", answer_post_server=str(e)
             )
         except Exception as e:
             Attempt.objects.create(
-                mailing=self,
-                status='fail',
-                answer_post_server=str(e)
+                mailing=self, status="fail", answer_post_server=str(e)
             )
 
-class Attempt(models.Model):
-    status_choice = [
-        ('success', 'Успешно'),
-        ('fail', 'Не успешно')
-    ]
 
-    created_at = models.DateTimeField(auto_now=True, verbose_name='Время попытки')
-    status = models.CharField(choices=status_choice, verbose_name='Статус попытки')
-    answer_post_server = models.TextField(verbose_name='Ответ почтового сервера')
-    mailing = models.ForeignKey('Mailing', verbose_name='Рассылка', on_delete=models.CASCADE)
+class Attempt(models.Model):
+    status_choice = [("success", "Успешно"), ("fail", "Не успешно")]
+
+    created_at = models.DateTimeField(auto_now=True, verbose_name="Время попытки")
+    status = models.CharField(choices=status_choice, verbose_name="Статус попытки")
+    answer_post_server = models.TextField(verbose_name="Ответ почтового сервера")
+    mailing = models.ForeignKey(
+        "Mailing", verbose_name="Рассылка", on_delete=models.CASCADE
+    )
