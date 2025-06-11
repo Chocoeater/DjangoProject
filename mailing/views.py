@@ -1,13 +1,12 @@
 from datetime import timedelta
 
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, DetailView, CreateView, TemplateView
 from django.views.generic.edit import UpdateView, DeleteView
 from django.utils import timezone
-
 
 from mailing.models import Recipient, Message, Mailing, Attempt
 from mailing.forms import RecipientForm, MessageForm, MailingForm

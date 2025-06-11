@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 
 from django.conf.global_settings import STATICFILES_DIRS, MEDIA_URL, MEDIA_ROOT, AUTH_USER_MODEL
+from django.urls import reverse_lazy
 from dotenv import load_dotenv
 import os
 
@@ -158,3 +159,4 @@ FORBIDDEN_WORDS = ['казино', 'криптовалюта', 'крипта', '
 
 AUTH_USER_MODEL = 'users.User'
 
+LOGIN_REDIRECT_URL = reverse_lazy('catalog:product_list')

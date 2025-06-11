@@ -5,6 +5,8 @@ from catalog.forms import ProductForm
 from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 
 class ProductListView(ListView):
@@ -13,18 +15,18 @@ class ProductListView(ListView):
     context_object_name = 'products'
     paginate_by = 4
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = 'product_detail.html'
     context_object_name = 'product'
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     template_name = 'add_product.html'
     form_class = ProductForm
     success_url = reverse_lazy('catalog:success_add')
 
-class ContactView(View):
+class ContactView(LoginRequiredMixin, View):
     template_name = 'contacts.html'
 
     def get(self, request):
@@ -42,7 +44,7 @@ class ContactView(View):
 
         return redirect('catalog:success_contact')
 
-class ContactSuccessView(View):
+class ContactSuccessView(LoginRequiredMixin, View):
     template_name = 'success_send_message.html'
 
     def get(self, request):
