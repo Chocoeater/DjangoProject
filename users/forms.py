@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm
 from django.core.mail import send_mail
 
 from users.models import User
@@ -25,5 +25,16 @@ class CustomLoginForm(AuthenticationForm):
         for field in self.fields.values():
             field.widget.attrs.update({'class': 'form-control'})
 
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        fields = ['avatar', 'phone', 'country']
+        model = User
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})
+
+    password = None
 
 

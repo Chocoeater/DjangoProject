@@ -160,3 +160,4 @@ FORBIDDEN_WORDS = ['казино', 'криптовалюта', 'крипта', '
 AUTH_USER_MODEL = 'users.User'
 
 LOGIN_REDIRECT_URL = reverse_lazy('catalog:product_list')
+LOGIN_URL = 'users:login'
