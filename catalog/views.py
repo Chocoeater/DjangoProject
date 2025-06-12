@@ -37,7 +37,7 @@ class ProductDeleteView(DeleteView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
-        if obj.owner != self.request.user:
+        if obj.owner != self.request.user or not self.request.user.is_staff or not self.request.user.is_superuser or not self.request.user.groups.filter(name='Модераторы').exists():
             raise PermissionDenied
         return obj
 

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.urls.base import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
@@ -50,11 +51,25 @@ class BlogRecordCreateView(CreateView):
     form_class = BlogRecordForm
     success_url = reverse_lazy("blog:records_list")
 
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if self.request.user.groups.filter(name='Контент-менеджер').exists() or self.request.user.is_superuser:
+            return obj
+        else:
+            raise PermissionDenied
+
 
 class BlogRecordUpdateView(UpdateView):
     model = BlogRecord
     template_name = "record_update.html"
     form_class = BlogRecordForm
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if self.request.user.groups.filter(name='Контент-менеджер').exists() or self.request.user.is_superuser:
+            return obj
+        else:
+            raise PermissionDenied
 
     def get_success_url(self):
         return reverse("blog:record_detail", kwargs={"pk": self.object.pk})
@@ -64,3 +79,10 @@ class BlogRecordDeleteView(DeleteView):
     model = BlogRecord
     template_name = "record_delete.html"
     success_url = reverse_lazy("blog:records_list")
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if self.request.user.groups.filter(name='Контент-менеджер').exists() or self.request.user.is_superuser:
+            return obj
+        else:
+            raise PermissionDenied
