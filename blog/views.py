@@ -53,7 +53,10 @@ class BlogRecordCreateView(CreateView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
-        if self.request.user.groups.filter(name='Контент-менеджер').exists() or self.request.user.is_superuser:
+        if (
+            self.request.user.groups.filter(name="Контент-менеджер").exists()
+            or self.request.user.is_superuser
+        ):
             return obj
         else:
             raise PermissionDenied
@@ -66,7 +69,10 @@ class BlogRecordUpdateView(UpdateView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
-        if self.request.user.groups.filter(name='Контент-менеджер').exists() or self.request.user.is_superuser:
+        if (
+            self.request.user.groups.filter(name="Контент-менеджер").exists()
+            or self.request.user.is_superuser
+        ):
             return obj
         else:
             raise PermissionDenied
@@ -82,7 +88,10 @@ class BlogRecordDeleteView(DeleteView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
-        if self.request.user.groups.filter(name='Контент-менеджер').exists() or self.request.user.is_superuser:
+        if (
+            self.request.user.groups.filter(name="Контент-менеджер").exists()
+            or self.request.user.is_superuser
+        ):
             return obj
         else:
             raise PermissionDenied

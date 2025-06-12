@@ -5,7 +5,7 @@ from users.models import User
 
 
 class Command(BaseCommand):
-    help = 'Создает пользователя с правами контент-менеджера'
+    help = "Создает пользователя с правами контент-менеджера"
 
     def handle(self, *args, **options):
         user = User.objects.create(email="contentmanager@mail.ru", country="ru")
@@ -13,7 +13,7 @@ class Command(BaseCommand):
         user.is_active = True
         user.save()
 
-        group = Group.objects.get(name='Контент-менеджер')
+        group = Group.objects.get(name="Контент-менеджер")
         user.groups.add(group)
 
         self.stdout.write(self.style.SUCCESS("Контент-менеджер создан!"))
