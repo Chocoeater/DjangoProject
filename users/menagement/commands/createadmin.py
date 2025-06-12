@@ -11,3 +11,5 @@ class Command(BaseCommand):
         user.is_staff = True
         user.is_superuser = True
         user.save()
+
+        self.stdout.write(self.style.SUCCESS("Админ создан!"))
