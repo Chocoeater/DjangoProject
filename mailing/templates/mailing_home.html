@@ -1,0 +1,28 @@
+{% extends 'mailing_base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{%block content %}
+<div class="row text-center">
+    <div class="col-3"></div>
+    <div class="card m-3" style="width: 18rem;">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h5 class="card-title">Всего рассылок</h5></li>
+            <li class="list-group-item"><h1 class="display-1">{{total_mailings}}</h1></li>
+        </ul>
+    </div>
+    <div class="card m-3" style="width: 18rem;">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h5 class="card-title">Активных рассылок</h5></li>
+            <li class="list-group-item"><h1 class="display-1">{{total_active}}</h1></li>
+        </ul>
+    </div>
+    <div class="card m-3" style="width: 18rem;">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h5 class="card-title">Получателей</h5></li>
+            <li class="list-group-item"><h1 class="display-1">{{recipients}}</h1></li>
+        </ul>
+    </div>
+    <div class="col-3"></div>
+</div>
+{% endblock %}

@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.core.mail import send_mail
-from django.views.generic import ListView, DetailView
-from django.views.generic.edit import UpdateView, CreateView, DeleteView
-from blog.models import BlogRecord
-from django.urls.base import reverse_lazy, reverse
+from django.urls.base import reverse, reverse_lazy
+from django.views.generic import DetailView, ListView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
 from blog.forms import BlogRecordForm
+from blog.models import BlogRecord
 
 # Create your views here.
 

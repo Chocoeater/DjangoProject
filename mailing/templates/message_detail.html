@@ -1,0 +1,27 @@
+{% extends 'mailing_base.html' %}
+
+{% block title %}Сообщение {{ message.pk }}{% endblock %}
+
+{%block content %}
+<div class="row">
+    <div class="col-2"></div>
+    <div class="card col mt-3">
+        <div class="card-header">
+            {{ message.subject }}
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">{{ message.body }}</li>
+        </ul>
+    </div>
+    <div class="col-2"></div>
+</div>
+<div class="row text-center mt-3">
+    <div class="col-5"></div>
+    <div class="col">
+        <a href="{% url 'mailing:messages_list' %}" type="button" class="btn btn-light">Назад</a>
+        <a href="{% url 'mailing:message_update' message.pk %}" type="button" class="btn btn-warning">Редактировать</a>
+        <a href="{% url 'mailing:message_delete' message.pk %}" type="button" class="btn btn-danger">Удалить</a>
+    </div>
+    <div class="col-5"></div>
+</div>
+{% endblock %}

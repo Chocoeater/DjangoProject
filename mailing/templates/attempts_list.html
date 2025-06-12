@@ -1,0 +1,37 @@
+{% extends 'mailing_base.html' %}
+
+{% block title %}Список попыток{% endblock %}
+
+
+{%block content %}
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">ID попытки</th>
+                <th scope="col">Время попытки</th>
+                <th scope="col">Статус</th>
+                <th scope="col">Ответ почтового сервера</th>
+                <th scope="col">ID рассылки</th>
+                <th scope="col">Тема рассылки</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for attempt in attempts %}
+            <tr>
+                <th scope="row">{{attempt.pk}}</th>
+                <td>{{attempt.created_at}}</td>
+                <td>{{attempt.status}}</td>
+                <td>{{attempt.answer_post_server}}</td>
+                <td>{{attempt.mailing.pk}}</td>
+                <td>{{attempt.mailing.message.subject}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-2"></div>
+</div>
+{% endblock %}

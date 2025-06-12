@@ -1,0 +1,17 @@
+{% extends 'base_blog.html' %}
+
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-3"></div>
+    <div class="col-6">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success my-2">Подтвердить</button>
+    </div>
+    <div class="col-3"></div>
+    </div>
+</form>
+{% endblock %}

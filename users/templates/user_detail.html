@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.email }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-4">
+        {% if user.avatar %}
+        <img src="{{ user.avatar.url }}" alt="Аватар" class="img-thumbnail" style="width: 400px; height: auto;">
+        {% else %}
+        <img src="/static/img/default-avatar.png" alt="Нет аватара">
+        {% endif %}
+    </div>
+    <div class="col">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th scope="row">Электронная почта</th>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Телефон</th>
+                {% if user.phone %}
+                <td>{{ user.phone }}</td>
+                {% else %}
+                <td>Не указано</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th scope="row">Страна</th>
+                {% if user.country %}
+                <td>{{ user.country }}</td>
+                {% else %}
+                <td>Не указано</td>
+                {% endif %}
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row center">
+    <div class="col">
+    </div>
+    <div class="col-3">
+        <a class="btn btn-secondary btn-sm mt-4" href="{% url 'catalog:product_list' %}">Назад</a>
+        <a class="btn btn-light btn-sm mt-4" href="{% url 'users:update_user' user.pk %}">Редактировать</a>
+    </div>
+    <div class="col">
+    </div>
+</div>
+</div>
+
+{% endblock %}
