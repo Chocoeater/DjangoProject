@@ -1,0 +1,10 @@
+[
+{
+    "model": "catalog.contact",
+    "pk": 1,
+    "fields": {
+        "contact_name": "Москва",
+        "phone_number": "+7 777 777 77 77"
+    }
+}
+]
