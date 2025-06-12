@@ -2,9 +2,10 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, ListView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.db.models import Q
 
 from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Contact, Product
@@ -13,7 +14,9 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     template_name = 'product_update.html'
     context_object_name = 'product'
-    success_url = reverse_lazy('catalog:product_detail')
+
+    def get_success_url(self):
+        return reverse('catalog:product_detail', kwargs={'pk': self.object.pk})
 
     def get_form_class(self):
         user = self.request.user
@@ -44,6 +47,18 @@ class ProductListView(ListView):
     template_name = "home.html"
     context_object_name = "products"
     paginate_by = 4
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            if user.is_superuser or user.is_staff or user.groups.filter(name='Модераторы').exists():
+                return Product.objects.all()
+            else:
+                return Product.objects.filter(
+                    Q(status=True) | Q(owner=user)
+                ).distinct()
+        else:
+            return Product.objects.filter(status=True)
 
 
 class ProductDetailView(LoginRequiredMixin, DetailView):
