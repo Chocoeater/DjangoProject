@@ -30,6 +30,19 @@
             </tbody>
         </table>
     </div>
+    <div class="row text-center mt-3">
+    <div class="col-4"></div>
+    <div class="col">
+        <a href="{% url 'catalog:product_list' %}" type="button" class="btn btn-light">Назад</a>
+        {% if perms.catalog.can_unpublish_product or perms.product.change_product %}
+        <a href="{% url 'catalog:product_update' product.pk %}" type="button" class="btn btn-warning">Редактировать</a>
+        {% endif %}
+        {% if perms.catalog.delete_product %}
+        <a href="{% url 'catalog:product_delete' product.pk %}" type="button" class="btn btn-danger">Удалить</a>
+        {% endif%}
+    </div>
+    <div class="col-4"></div>
+</div>
 </div>
 
 {% endblock %}

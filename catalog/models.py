@@ -33,6 +33,7 @@ class Product(models.Model):
     price = models.FloatField(verbose_name="Стоимость")
     created_at = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name="Дата изменения", auto_now=True)
+    status = models.BooleanField(default=False, verbose_name='Статус публикации')
 
     def __str__(self):
         return self.product_name
@@ -43,6 +44,9 @@ class Product(models.Model):
         ordering = [
             "product_name",
             "price",
+        ]
+        permissions = [
+            ('can_unpublish_product', 'Может менять статус продукта'),
         ]
 
 

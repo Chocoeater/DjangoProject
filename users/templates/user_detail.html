@@ -34,6 +34,14 @@
                 <td>Не указано</td>
                 {% endif %}
             </tr>
+            <tr>
+                <th scope="row">Группы доступа</th>
+                {% if user.groups %}
+                <td>{{ user.groups.get }}</td>
+                {% else %}
+                <td>Рядовой пользователь</td>
+                {% endif %}
+            </tr>
             </tbody>
         </table>
     </div>

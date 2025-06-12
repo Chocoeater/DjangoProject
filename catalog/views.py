@@ -1,12 +1,33 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, View
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from catalog.forms import ProductForm
+from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Contact, Product
+
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
+    model = Product
+    template_name = 'product_update.html'
+    context_object_name = 'product'
+    success_url = reverse_lazy('catalog:product_detail')
+
+    def get_form_class(self):
+        user = self.request.user
+        if user.has_perm('catalog.change_product'):
+            return ProductForm
+        if user.has_perm('catalog.can_unpublish_product'):
+            return ProductModeratorForm
+        raise PermissionDenied
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = 'product_delete.html'
+    context_object_name = 'product'
+    success_url = reverse_lazy('catalog:product_list')
 
 
 class ProductListView(ListView):
