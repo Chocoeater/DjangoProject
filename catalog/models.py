@@ -34,6 +34,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name="Дата изменения", auto_now=True)
     status = models.BooleanField(default=False, verbose_name='Статус публикации')
+    owner = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, related_name='products', verbose_name='Владелец')
 
     def __str__(self):
         return self.product_name

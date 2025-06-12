@@ -17,7 +17,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_form_class(self):
         user = self.request.user
-        if user.has_perm('catalog.change_product'):
+        if user.has_perm('catalog.change_product') or user == self.object.owner:
             return ProductForm
         if user.has_perm('catalog.can_unpublish_product'):
             return ProductModeratorForm
@@ -28,6 +28,15 @@ class ProductDeleteView(DeleteView):
     template_name = 'product_delete.html'
     context_object_name = 'product'
     success_url = reverse_lazy('catalog:product_list')
+
+    # def get_queryset(self):
+    #     return Product.objects.filter(owner=self.request.user) # 404 не устраивает
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.owner != self.request.user:
+            raise PermissionDenied
+        return obj
 
 
 class ProductListView(ListView):
@@ -43,11 +52,17 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "product"
 
 
+
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
-    template_name = "add_product.html"
     form_class = ProductForm
+    template_name = "add_product.html"
     success_url = reverse_lazy("catalog:success_add")
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
 
 
 class ContactView(LoginRequiredMixin, View):
