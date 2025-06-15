@@ -56,13 +56,15 @@
     </div>
 </div>
 <!-- Пагинация, почти полностью слизано с тырнетов -->
+
+{% with current_category_id as cat_id %}
 <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">
 
         <!-- Кнопка "Назад" -->
         {% if page_obj.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if cat_id %}&category_id={{ cat_id }}{% endif %}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
@@ -77,14 +79,14 @@
         {% if page_obj.number == num %}
         <li class="page-item active"><span class="page-link">{{ num }}</span></li>
         {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
-        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ num }}{% if cat_id %}&category_id={{ cat_id }}{% endif %}">{{ num }}</a></li>
         {% endif %}
         {% endfor %}
 
         <!-- Кнопка "Вперёд" -->
         {% if page_obj.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if cat_id %}&category_id={{ cat_id }}{% endif %}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>
@@ -96,5 +98,6 @@
 
     </ul>
 </nav>
+{% endwith %}
 {% endblock %}
 

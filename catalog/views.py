@@ -1,5 +1,4 @@
-from asyncio import timeout
-from unicodedata import category
+
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -65,8 +64,10 @@ class ProductListView(ListView):
     def get_queryset(self):
         user = self.request.user
         category_id = self.request.GET.get("category_id")
+        page = self.request.GET.get("page", 1)
 
-        cache_key = f'prod_qs_user_{user.pk if user.is_authenticated else "anonim"}_cat_{category_id if category_id else "all"}'
+        cache_key = (f'prod_qs_user_{user.pk if user.is_authenticated else "anonim"}_cat_'
+                     f'{category_id if category_id else "all"}_page_{page}')
 
         queryset = cache.get(cache_key)
         if queryset:
