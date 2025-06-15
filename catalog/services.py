@@ -1,5 +1,6 @@
 from catalog.models import Category, Product
 
+
 class ProductService:
 
     @staticmethod
@@ -10,4 +11,3 @@ class ProductService:
         :return: список продуктов-объектов
         """
         return queryset.filter(category_id=category_id)
-
