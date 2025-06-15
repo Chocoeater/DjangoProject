@@ -11,22 +11,50 @@
 {% endblock %}
 
 {% block content %}
-<div class="row text-center">
-    {% for product in products %}
-    <div class="col-3 mb-1">
-        <div class="card" style="width: 18rem;">
-            <img src="{{ product.image_product | media_filter }}" class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">{{ product.product_name }}</h5>
-                <p class="card-text">{{ product.description | truncatechars:100 }}</p>
-                <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-primary">Подробнее</a>
-                <a href="#" class="btn btn-primary">В корзину</a>
+<div class="container">
+    <div class="row">
+        <!-- Левая колонка: категории -->
+        <div class="col-3">
+            <form method="get" action="{% url 'catalog:product_list' %}">
+                <h5>Категории</h5>
+                <select class="form-select form-select-sm"
+                        name="category_id"
+                        onchange="this.form.submit()">
+                    <option value="" {% if not current_category_id %}selected{% endif %}>Все</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}"
+                                {% if category.id == current_category_id %}selected{% endif %}>
+                            {{ category.category_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <!-- Правая колонка: карточки продуктов -->
+        <div class="col-9">
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-4 mb-4">
+                        <div class="card h-100">
+                            <img src="{{ product.image_product | media_filter }}"
+                                 class="card-img-top"
+                                 alt="{{ product.product_name }}">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ product.product_name }}</h5>
+                                <p class="card-text">{{ product.description|truncatechars:100 }}</p>
+                                <div class="mt-auto">
+                                    <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-primary btn-sm">Подробнее</a>
+                                    <a href="#" class="btn btn-success btn-sm">В корзину</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>
-    {% endfor %}
 </div>
-
 <!-- Пагинация, почти полностью слизано с тырнетов -->
 <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">

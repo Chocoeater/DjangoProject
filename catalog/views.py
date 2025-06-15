@@ -1,14 +1,21 @@
+from asyncio import timeout
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 from django.views.generic import DetailView, ListView, View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from catalog.services import ProductService
+from unicodedata import category
 
 from catalog.forms import ProductForm, ProductModeratorForm
-from catalog.models import Contact, Product
+from catalog.models import Contact, Product, Category
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
@@ -57,23 +64,55 @@ class ProductListView(ListView):
 
     def get_queryset(self):
         user = self.request.user
+        category_id = self.request.GET.get('category_id')
+
+        cache_key = f'prod_qs_user_{user.pk if user.is_authenticated else "anonim"}_cat_{category_id if category_id else "all"}'
+
+        queryset = cache.get(cache_key)
+        if queryset:
+            return queryset
+
         if user.is_authenticated:
             if (
                 user.is_superuser
                 or user.is_staff
                 or user.groups.filter(name="Модераторы").exists()
             ):
-                return Product.objects.all()
+                queryset = Product.objects.all()
             else:
-                return Product.objects.filter(Q(status=True) | Q(owner=user)).distinct()
+                queryset = Product.objects.filter(Q(status=True) | Q(owner=user)).distinct()
         else:
-            return Product.objects.filter(status=True)
+            queryset = Product.objects.filter(status=True)
+
+        if category_id:
+            try:
+                category_id = int(category_id)
+                queryset = ProductService.category_filter(queryset, category_id)
+            except ValueError:
+                pass
+
+        cache.set(cache_key, queryset, 60 * 5)
+
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        try:
+            context['current_category_id'] = int(self.request.GET.get('category_id'))
+        except (TypeError, ValueError):
+            context['current_category_id'] = None
+        return context
 
 
+
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = "product_detail.html"
     context_object_name = "product"
+
+
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
