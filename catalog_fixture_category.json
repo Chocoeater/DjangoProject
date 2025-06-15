@@ -1,0 +1,18 @@
+[
+{
+    "model": "catalog.category",
+    "pk": 3,
+    "fields": {
+        "category_name": "Молочная продукция",
+        "description": "Пищевые продукты, вырабатываемые из молока."
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 4,
+    "fields": {
+        "category_name": "Выпечка",
+        "description": "Хлебобулочные и кондитерские изделия, изготавливаемые методом выпекания."
+    }
+}
+]

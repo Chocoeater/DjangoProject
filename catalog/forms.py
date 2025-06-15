@@ -7,7 +7,14 @@ from catalog.models import Product
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ["product_name", "description", "image_product", "category", "price"]
+        fields = [
+            "product_name",
+            "description",
+            "image_product",
+            "category",
+            "price",
+            "status",
+        ]
 
     # ПОДСМОТРЕНО В ТЫРНЕТАХ
     def __init__(self, *args, **kwargs):
@@ -23,6 +30,10 @@ class ProductForm(forms.ModelForm):
             self.fields[field].widget.attrs[
                 "class"
             ] = css_class  # добавляем классы к базовой html форме
+
+        self.fields["status"].widget = forms.CheckboxInput(
+            attrs={"class": "form-check-input"}
+        )
 
     def clean_price(self):
         price = self.cleaned_data.get("price")
@@ -59,3 +70,15 @@ class ProductForm(forms.ModelForm):
             raise forms.ValidationError(
                 f'Обнаружены запрещенные слова: {", ".join(found_words)}'
             )
+
+
+class ProductModeratorForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ("status",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["status"].widget = forms.CheckboxInput(
+            attrs={"class": "form-check-input"}
+        )
