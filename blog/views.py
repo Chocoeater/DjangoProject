@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.urls.base import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from blog.mixins import ContentManagerPermMixin
 
 from blog.forms import BlogRecordForm
 from blog.models import BlogRecord
@@ -45,53 +46,24 @@ class BlogRecordDetailView(DetailView):
         return self.object
 
 
-class BlogRecordCreateView(CreateView):
+class BlogRecordCreateView(ContentManagerPermMixin, CreateView):
     model = BlogRecord
     template_name = "record_create.html"
     form_class = BlogRecordForm
     success_url = reverse_lazy("blog:records_list")
 
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        if (
-            self.request.user.groups.filter(name="Контент-менеджер").exists()
-            or self.request.user.is_superuser
-        ):
-            return obj
-        else:
-            raise PermissionDenied
 
-
-class BlogRecordUpdateView(UpdateView):
+class BlogRecordUpdateView(ContentManagerPermMixin, UpdateView):
     model = BlogRecord
     template_name = "record_update.html"
     form_class = BlogRecordForm
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        if (
-            self.request.user.groups.filter(name="Контент-менеджер").exists()
-            or self.request.user.is_superuser
-        ):
-            return obj
-        else:
-            raise PermissionDenied
 
     def get_success_url(self):
         return reverse("blog:record_detail", kwargs={"pk": self.object.pk})
 
 
-class BlogRecordDeleteView(DeleteView):
+class BlogRecordDeleteView(ContentManagerPermMixin, DeleteView):
     model = BlogRecord
     template_name = "record_delete.html"
     success_url = reverse_lazy("blog:records_list")
 
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        if (
-            self.request.user.groups.filter(name="Контент-менеджер").exists()
-            or self.request.user.is_superuser
-        ):
-            return obj
-        else:
-            raise PermissionDenied
