@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordResetConfirmView
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView
@@ -54,3 +54,4 @@ class ProfileUserView(DetailView):
     model = User
     context_object_name = "user"
     template_name = "user_detail.html"
+
