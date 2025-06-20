@@ -25,6 +25,7 @@ class Recipient(models.Model):
         null=True,
         blank=True,
     )
+    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='recipients', verbose_name='Владелец')
 
 
 class Message(models.Model):
@@ -83,14 +84,15 @@ class Mailing(models.Model):
                 mailing=self,
                 status="success",
                 answer_post_server="Письмо успешно отправлено",
+                owner=self.owner
             )
         except SMTPException as e:
             Attempt.objects.create(
-                mailing=self, status="fail", answer_post_server=str(e)
+                mailing=self, status="fail", answer_post_server=str(e), owner=self.owner
             )
         except Exception as e:
             Attempt.objects.create(
-                mailing=self, status="fail", answer_post_server=str(e)
+                mailing=self, status="fail", answer_post_server=str(e), owner=self.owner
             )
 
 
@@ -104,3 +106,4 @@ class Attempt(models.Model):
         "Mailing", verbose_name="Рассылка", on_delete=models.CASCADE
     )
     owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='attempts', verbose_name='Владелец')
+

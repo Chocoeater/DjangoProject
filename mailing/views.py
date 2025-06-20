@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -9,31 +10,36 @@ from django.views.generic import CreateView, DetailView, ListView, TemplateView
 from django.views.generic.edit import DeleteView, UpdateView
 
 from mailing.forms import MailingForm, MessageForm, RecipientForm
+from mailing.mixins import MailingManagerAndOwnerPermMixin, OwnerPermMixin
 from mailing.models import Attempt, Mailing, Message, Recipient
 
 # Create your views here.
 
 
-class RecipientListView(ListView):
+class RecipientListView(MailingManagerAndOwnerPermMixin, ListView):
     model = Recipient
     template_name = "recipient_list.html"
     context_object_name = "recipients"
 
 
-class RecipientDetailView(DetailView):
+class RecipientDetailView(OwnerPermMixin, DetailView):
     model = Recipient
     template_name = "recipient_detail.html"
     context_object_name = "recipient"
 
 
-class RecipientCreateView(CreateView):
+class RecipientCreateView(LoginRequiredMixin, CreateView):
     model = Recipient
     form_class = RecipientForm
     template_name = "recipient_create.html"
     success_url = reverse_lazy("mailing:recipients_list")
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
-class RecipientUpdateView(UpdateView):
+
+class RecipientUpdateView(OwnerPermMixin, UpdateView):
     model = Recipient
     form_class = RecipientForm
     context_object_name = "recipient"
@@ -43,33 +49,37 @@ class RecipientUpdateView(UpdateView):
         return reverse("mailing:recipient", kwargs={"pk": self.object.pk})
 
 
-class RecipientDeleteView(DeleteView):
+class RecipientDeleteView(OwnerPermMixin, DeleteView):
     model = Recipient
     template_name = "recipient_delete.html"
     context_object_name = "recipient"
     success_url = reverse_lazy("mailing:recipients_list")
 
 
-class MessageListView(ListView):
+class MessageListView(MailingManagerAndOwnerPermMixin, ListView):
     model = Message
     template_name = "message_list.html"
     context_object_name = "messages"
 
 
-class MessageDetailView(DetailView):
+class MessageDetailView(OwnerPermMixin, DetailView):
     model = Message
     template_name = "message_detail.html"
     context_object_name = "message"
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     template_name = "message_create.html"
     form_class = MessageForm
     success_url = reverse_lazy("mailing:messages_list")
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
-class MessageUpdateView(UpdateView):
+
+class MessageUpdateView(OwnerPermMixin, UpdateView):
     model = Message
     template_name = "message_update.html"
     context_object_name = "message"
@@ -79,32 +89,36 @@ class MessageUpdateView(UpdateView):
         return reverse("mailing:message", kwargs={"pk": self.object.pk})
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(OwnerPermMixin, DeleteView):
     model = Message
     template_name = "message_delete.html"
     context_object_name = "message"
     success_url = reverse_lazy("mailing:messages_list")
 
 
-class MailingListView(ListView):
+class MailingListView(MailingManagerAndOwnerPermMixin, ListView):
     model = Mailing
     template_name = "mailings_list.html"
     context_object_name = "mailings"
 
 
-class MailingDetailView(DetailView):
+class MailingDetailView(OwnerPermMixin, DetailView):
     model = Mailing
     template_name = "mailing_detail.html"
 
 
-class MailingCreateView(CreateView):
+class MailingCreateView(LoginRequiredMixin, CreateView):
     model = Mailing
     template_name = "mailing_create.html"
     form_class = MailingForm
     success_url = reverse_lazy("mailing:mailings_list")
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
-class MailingUpdateView(UpdateView):
+
+class MailingUpdateView(OwnerPermMixin, UpdateView):
     model = Mailing
     template_name = "mailing_update.html"
     form_class = MailingForm
@@ -113,7 +127,7 @@ class MailingUpdateView(UpdateView):
         return reverse("mailing:mailing_detail", kwargs={"pk": self.object.pk})
 
 
-class MailingDeleteView(DeleteView):
+class MailingDeleteView(OwnerPermMixin, DeleteView):
     model = Mailing
     template_name = "mailing_delete.html"
     success_url = reverse_lazy("mailing:mailings_list")
@@ -121,7 +135,6 @@ class MailingDeleteView(DeleteView):
 
 @require_POST
 def mailing_run_view(request, pk):
-    print("mailing_run_view called")
     mailing = get_object_or_404(Mailing, pk=pk)
 
     if mailing.status != "started":
@@ -143,7 +156,7 @@ def mailing_update_status_view(request, pk):
     return redirect("mailing:mailings_list")
 
 
-class AttemptListView(ListView):
+class AttemptListView(MailingManagerAndOwnerPermMixin, ListView):
     model = Attempt
     template_name = "attempts_list.html"
     context_object_name = "attempts"
@@ -153,8 +166,14 @@ class MianPageView(TemplateView):
     template_name = "mailing_home.html"
 
     def get_context_data(self, **kwargs):
+        user = self.request.user
         context = super().get_context_data(**kwargs)
-        context["total_mailings"] = Mailing.objects.count()
-        context["total_active"] = Mailing.objects.filter(status="started").count()
-        context["recipients"] = Recipient.objects.count()
+        if user.is_superuser or user.groups.filter(name="Менеджер рассылок").exists():
+            context["total_mailings"] = Mailing.objects.count()
+            context["total_active"] = Mailing.objects.filter(status="started").count()
+            context["recipients"] = Recipient.objects.count()
+        else:
+            context["total_mailings"] = Mailing.objects.filter(owner=user).count()
+            context["total_active"] = Mailing.objects.filter(status="started", owner=user).count()
+            context["recipients"] = Recipient.objects.filter(owner=user).count()
         return context
