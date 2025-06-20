@@ -3,24 +3,23 @@ from smtplib import SMTPException
 from django.conf import settings
 from django.core.mail import EmailMessage, get_connection
 from django.db import models
-from django.db.models import CharField, EmailField, TextField
 from django.utils import timezone
 
 # Create your models here.
 
 
 class Recipient(models.Model):
-    email = EmailField(
+    email = models.EmailField(
         unique=True,
         verbose_name="Адрес электронной почты",
         help_text="Введите адрес электронной почты получателя.",
     )
-    full_name = CharField(
+    full_name = models.CharField(
         max_length=200,
         verbose_name="Ф.И.О.",
         help_text="Введите фамилию, имя и отчество (при наличии) получателя.",
     )
-    comment = TextField(
+    comment = models.TextField(
         verbose_name="Комментарий",
         help_text="Введите комментарий к профилю получателя (не обязательно).",
         null=True,
@@ -29,10 +28,11 @@ class Recipient(models.Model):
 
 
 class Message(models.Model):
-    subject = CharField(
+    subject = models.CharField(
         max_length=200, verbose_name="Тема письма", help_text="Введите тему письма"
     )
-    body = TextField(verbose_name="Тест письма", help_text="Введите текст письма")
+    body = models.TextField(verbose_name="Тест письма", help_text="Введите текст письма")
+    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='messages', verbose_name='Владелец')
 
 
 class Mailing(models.Model):
@@ -41,7 +41,7 @@ class Mailing(models.Model):
         ("started", "Запущена"),
         ("ended", "Завершена"),
     ]
-
+    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='mailings', verbose_name='Владелец')
     start_time = models.DateTimeField(verbose_name="Время начала")
     end_time = models.DateTimeField(verbose_name="Время окончания")
     status = models.CharField(
@@ -103,3 +103,4 @@ class Attempt(models.Model):
     mailing = models.ForeignKey(
         "Mailing", verbose_name="Рассылка", on_delete=models.CASCADE
     )
+    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='attempts', verbose_name='Владелец')
