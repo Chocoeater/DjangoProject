@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -9,20 +10,20 @@ from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView, ListView, TemplateView
 from django.views.generic.edit import DeleteView, UpdateView
 
-from mailing.forms import MailingForm, MessageForm, RecipientForm
-from mailing.mixins import MailingManagerAndOwnerPermMixin, OwnerPermMixin
+from mailing.forms import MailingForm, MessageForm, RecipientForm, BlockMailingForm
+from mailing.mixins import OwnerOrManagerPermMixin
 from mailing.models import Attempt, Mailing, Message, Recipient
 
 # Create your views here.
 
 
-class RecipientListView(MailingManagerAndOwnerPermMixin, ListView):
+class RecipientListView(OwnerOrManagerPermMixin, ListView):
     model = Recipient
     template_name = "recipient_list.html"
     context_object_name = "recipients"
 
 
-class RecipientDetailView(OwnerPermMixin, DetailView):
+class RecipientDetailView(OwnerOrManagerPermMixin, DetailView):
     model = Recipient
     template_name = "recipient_detail.html"
     context_object_name = "recipient"
@@ -39,7 +40,7 @@ class RecipientCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class RecipientUpdateView(OwnerPermMixin, UpdateView):
+class RecipientUpdateView(OwnerOrManagerPermMixin, UpdateView):
     model = Recipient
     form_class = RecipientForm
     context_object_name = "recipient"
@@ -49,20 +50,20 @@ class RecipientUpdateView(OwnerPermMixin, UpdateView):
         return reverse("mailing:recipient", kwargs={"pk": self.object.pk})
 
 
-class RecipientDeleteView(OwnerPermMixin, DeleteView):
+class RecipientDeleteView(OwnerOrManagerPermMixin, DeleteView):
     model = Recipient
     template_name = "recipient_delete.html"
     context_object_name = "recipient"
     success_url = reverse_lazy("mailing:recipients_list")
 
 
-class MessageListView(MailingManagerAndOwnerPermMixin, ListView):
+class MessageListView(OwnerOrManagerPermMixin, ListView):
     model = Message
     template_name = "message_list.html"
     context_object_name = "messages"
 
 
-class MessageDetailView(OwnerPermMixin, DetailView):
+class MessageDetailView(OwnerOrManagerPermMixin, DetailView):
     model = Message
     template_name = "message_detail.html"
     context_object_name = "message"
@@ -79,30 +80,31 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class MessageUpdateView(OwnerPermMixin, UpdateView):
+class MessageUpdateView(OwnerOrManagerPermMixin, UpdateView):
     model = Message
     template_name = "message_update.html"
     context_object_name = "message"
     form_class = MessageForm
 
+
     def get_success_url(self):
         return reverse("mailing:message", kwargs={"pk": self.object.pk})
 
 
-class MessageDeleteView(OwnerPermMixin, DeleteView):
+class MessageDeleteView(OwnerOrManagerPermMixin, DeleteView):
     model = Message
     template_name = "message_delete.html"
     context_object_name = "message"
     success_url = reverse_lazy("mailing:messages_list")
 
 
-class MailingListView(MailingManagerAndOwnerPermMixin, ListView):
+class MailingListView(OwnerOrManagerPermMixin, ListView):
     model = Mailing
     template_name = "mailings_list.html"
     context_object_name = "mailings"
 
 
-class MailingDetailView(OwnerPermMixin, DetailView):
+class MailingDetailView(OwnerOrManagerPermMixin, DetailView):
     model = Mailing
     template_name = "mailing_detail.html"
 
@@ -118,16 +120,23 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class MailingUpdateView(OwnerPermMixin, UpdateView):
+class MailingUpdateView(OwnerOrManagerPermMixin, UpdateView):
     model = Mailing
     template_name = "mailing_update.html"
-    form_class = MailingForm
+
+    def get_form_class(self):
+        user = self.request.user
+        if user.is_superuser or user == self.object.owner:
+            return MailingForm
+        if user.has_perm("mailing.can_blocked"):
+            return BlockMailingForm
+        raise PermissionDenied
 
     def get_success_url(self):
         return reverse("mailing:mailing_detail", kwargs={"pk": self.object.pk})
 
 
-class MailingDeleteView(OwnerPermMixin, DeleteView):
+class MailingDeleteView(OwnerOrManagerPermMixin, DeleteView):
     model = Mailing
     template_name = "mailing_delete.html"
     success_url = reverse_lazy("mailing:mailings_list")
@@ -156,7 +165,7 @@ def mailing_update_status_view(request, pk):
     return redirect("mailing:mailings_list")
 
 
-class AttemptListView(MailingManagerAndOwnerPermMixin, ListView):
+class AttemptListView(OwnerOrManagerPermMixin, ListView):
     model = Attempt
     template_name = "attempts_list.html"
     context_object_name = "attempts"

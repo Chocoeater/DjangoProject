@@ -62,3 +62,12 @@ class MailingForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["recipient"].label_from_instance = lambda obj: obj.full_name
         self.fields["message"].label_from_instance = lambda obj: obj.subject
+
+class BlockMailingForm(forms.ModelForm):
+    class Meta:
+        model = Mailing
+        fields = ['message',]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["message"].label_from_instance = lambda obj: obj.subject

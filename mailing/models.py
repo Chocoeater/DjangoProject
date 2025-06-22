@@ -9,6 +9,10 @@ from django.utils import timezone
 
 
 class Recipient(models.Model):
+    class Meta:
+        verbose_name = 'Получатель-клиент'
+        verbose_name_plural = 'Получатели-клиенты'
+
     email = models.EmailField(
         unique=True,
         verbose_name="Адрес электронной почты",
@@ -29,6 +33,10 @@ class Recipient(models.Model):
 
 
 class Message(models.Model):
+    class Meta:
+        verbose_name = 'Сообщение'
+        verbose_name_plural = 'Сообщения'
+
     subject = models.CharField(
         max_length=200, verbose_name="Тема письма", help_text="Введите тему письма"
     )
@@ -37,6 +45,13 @@ class Message(models.Model):
 
 
 class Mailing(models.Model):
+    class Meta:
+        verbose_name = 'Рассылка'
+        verbose_name_plural = 'Рассылки'
+        permissions = [
+            ('can_blocked', 'Может блокировать'),
+        ]
+
     STATUS_CHOICES = [
         ("created", "Cоздана"),
         ("started", "Запущена"),
@@ -97,6 +112,10 @@ class Mailing(models.Model):
 
 
 class Attempt(models.Model):
+    class Meta:
+        verbose_name = 'Попытка'
+        verbose_name_plural = 'Попытки'
+
     status_choice = [("success", "Успешно"), ("fail", "Не успешно")]
 
     created_at = models.DateTimeField(auto_now=True, verbose_name="Время попытки")

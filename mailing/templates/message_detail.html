@@ -11,17 +11,20 @@
         </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">{{ message.body }}</li>
+            {% if user.is_superuser or perms.mailing.view_message %}
+                <li class="list-group-item">Владелец: {{ message.owner }}</li>
+            {% endif %}
         </ul>
     </div>
     <div class="col-2"></div>
 </div>
 <div class="row text-center mt-3">
-    <div class="col-5"></div>
+    <div class="col-4"></div>
     <div class="col">
         <a href="{% url 'mailing:messages_list' %}" type="button" class="btn btn-light">Назад</a>
         <a href="{% url 'mailing:message_update' message.pk %}" type="button" class="btn btn-warning">Редактировать</a>
         <a href="{% url 'mailing:message_delete' message.pk %}" type="button" class="btn btn-danger">Удалить</a>
     </div>
-    <div class="col-5"></div>
+    <div class="col-4"></div>
 </div>
 {% endblock %}
