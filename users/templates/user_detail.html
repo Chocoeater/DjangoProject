@@ -49,8 +49,10 @@
     <div class="col">
     </div>
     <div class="col-3">
-        <a class="btn btn-secondary btn-sm mt-4" href="{% url 'catalog:product_list' %}">Назад</a>
+        <button onclick="history.back()" class="btn btn-secondary btn-sm mt-4">Назад</button>
+        {% if request.user.is_superuser or request.user.pk == user.pk %}
         <a class="btn btn-light btn-sm mt-4" href="{% url 'users:update_user' user.pk %}">Редактировать</a>
+        {% endif %}
     </div>
     <div class="col">
     </div>

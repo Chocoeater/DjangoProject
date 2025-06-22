@@ -13,7 +13,7 @@ from users.views import (
     CustomLoginView,
     CustomLogoutView,
     ProfileUserView,
-    RegisterView,
+    RegisterView, UserListView, UserStatusToggle,
 )
 
 app_name = UsersConfig.name
@@ -52,4 +52,6 @@ urlpatterns = [
         PasswordResetCompleteView.as_view(template_name="reset_password/complete.html"),
         name="reset_complete",
     ),
+    path('users_list/', UserListView.as_view(), name='users_list'),
+    path('change_user_status/<int:pk>/', UserStatusToggle.as_view(), name='change_status'),
 ]
