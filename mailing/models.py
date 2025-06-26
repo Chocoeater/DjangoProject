@@ -56,6 +56,7 @@ class Mailing(models.Model):
         ("created", "Cоздана"),
         ("started", "Запущена"),
         ("ended", "Завершена"),
+        ("stopped", "Остановлена вручную"),
     ]
     owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='mailings', verbose_name='Владелец')
     start_time = models.DateTimeField(verbose_name="Время начала")
@@ -67,8 +68,12 @@ class Mailing(models.Model):
         "Message", on_delete=models.CASCADE, verbose_name="Сообщение"
     )
     recipient = models.ManyToManyField("Recipient", verbose_name="Получатели")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время создания')
 
     def update_status(self):
+        if self.status == 'stopped':
+            return
+
         now = timezone.now()
         if self.start_time <= now <= self.end_time:
             self.status = "started"

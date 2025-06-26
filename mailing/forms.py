@@ -66,8 +66,8 @@ class MailingForm(forms.ModelForm):
 class BlockMailingForm(forms.ModelForm):
     class Meta:
         model = Mailing
-        fields = ['message',]
+        fields = ['status',]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["message"].label_from_instance = lambda obj: obj.subject
+        self.fields["status"].label_from_instance = lambda obj: obj.subject

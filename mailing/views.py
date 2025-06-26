@@ -6,6 +6,9 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView, ListView, TemplateView
 from django.views.generic.edit import DeleteView, UpdateView
@@ -17,12 +20,12 @@ from mailing.models import Attempt, Mailing, Message, Recipient
 # Create your views here.
 
 
-class RecipientListView(OwnerOrManagerPermMixin, ListView):
+class RecipientListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
     model = Recipient
     template_name = "recipient_list.html"
     context_object_name = "recipients"
 
-
+@method_decorator(cache_page(60 * 5), name="dispatch")
 class RecipientDetailView(OwnerOrManagerPermMixin, DetailView):
     model = Recipient
     template_name = "recipient_detail.html"
@@ -50,20 +53,20 @@ class RecipientUpdateView(OwnerOrManagerPermMixin, UpdateView):
         return reverse("mailing:recipient", kwargs={"pk": self.object.pk})
 
 
-class RecipientDeleteView(OwnerOrManagerPermMixin, DeleteView):
+class RecipientDeleteView(LoginRequiredMixin, OwnerOrManagerPermMixin, DeleteView):
     model = Recipient
     template_name = "recipient_delete.html"
     context_object_name = "recipient"
     success_url = reverse_lazy("mailing:recipients_list")
 
 
-class MessageListView(OwnerOrManagerPermMixin, ListView):
+class MessageListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
     model = Message
     template_name = "message_list.html"
     context_object_name = "messages"
 
-
-class MessageDetailView(OwnerOrManagerPermMixin, DetailView):
+@method_decorator(cache_page(60 * 5), name="dispatch")
+class MessageDetailView(LoginRequiredMixin, OwnerOrManagerPermMixin, DetailView):
     model = Message
     template_name = "message_detail.html"
     context_object_name = "message"
@@ -80,7 +83,7 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class MessageUpdateView(OwnerOrManagerPermMixin, UpdateView):
+class MessageUpdateView(LoginRequiredMixin, OwnerOrManagerPermMixin, UpdateView):
     model = Message
     template_name = "message_update.html"
     context_object_name = "message"
@@ -91,20 +94,21 @@ class MessageUpdateView(OwnerOrManagerPermMixin, UpdateView):
         return reverse("mailing:message", kwargs={"pk": self.object.pk})
 
 
-class MessageDeleteView(OwnerOrManagerPermMixin, DeleteView):
+class MessageDeleteView(LoginRequiredMixin, OwnerOrManagerPermMixin, DeleteView):
     model = Message
     template_name = "message_delete.html"
     context_object_name = "message"
     success_url = reverse_lazy("mailing:messages_list")
 
 
-class MailingListView(OwnerOrManagerPermMixin, ListView):
+class MailingListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
     model = Mailing
     template_name = "mailings_list.html"
     context_object_name = "mailings"
+    ordering = 'created_at'
 
-
-class MailingDetailView(OwnerOrManagerPermMixin, DetailView):
+@method_decorator(cache_page(60 * 5), name="dispatch")
+class MailingDetailView(LoginRequiredMixin, OwnerOrManagerPermMixin, DetailView):
     model = Mailing
     template_name = "mailing_detail.html"
 
@@ -120,7 +124,7 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class MailingUpdateView(OwnerOrManagerPermMixin, UpdateView):
+class MailingUpdateView(LoginRequiredMixin, OwnerOrManagerPermMixin, UpdateView):
     model = Mailing
     template_name = "mailing_update.html"
 
@@ -136,7 +140,8 @@ class MailingUpdateView(OwnerOrManagerPermMixin, UpdateView):
         return reverse("mailing:mailing_detail", kwargs={"pk": self.object.pk})
 
 
-class MailingDeleteView(OwnerOrManagerPermMixin, DeleteView):
+class MailingDeleteView(LoginRequiredMixin, OwnerOrManagerPermMixin, DeleteView):
+    base_perm = 'delete'
     model = Mailing
     template_name = "mailing_delete.html"
     success_url = reverse_lazy("mailing:mailings_list")
@@ -165,13 +170,13 @@ def mailing_update_status_view(request, pk):
     return redirect("mailing:mailings_list")
 
 
-class AttemptListView(OwnerOrManagerPermMixin, ListView):
+class AttemptListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
     model = Attempt
     template_name = "attempts_list.html"
     context_object_name = "attempts"
 
 
-class MianPageView(TemplateView):
+class MianPageView(LoginRequiredMixin, TemplateView):
     template_name = "mailing_home.html"
 
     def get_context_data(self, **kwargs):

@@ -108,7 +108,7 @@ class ProductListView(ListView):
         return context
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")
+@method_decorator(cache_page(60 * 5), name="dispatch")
 class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = "product_detail.html"

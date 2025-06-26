@@ -22,13 +22,13 @@
 <div class="row">
     <div class="col-2"></div>
     {% for mailing in mailings %}
-    <div class="card m-3" style="width: 18rem;">
+    <div class="card m-3" style="width: 18rem; {% if mailing.status == 'started' %}border-color: blue{% elif mailing.status == 'ended' %}border-color:green{% elif mailing.status == 'stopped' %}border-color:red{% endif %}">
         <div class="card-body">
             <h2 class="card-title">{{ mailing.message.subject }}</h2>
             {% for rec in mailing.recipient.all %}
             <h5 class="card-title">{{ rec.full_name }}</h5>
             {% endfor %}
-            <p class="card-subtitle mb-2 text-body-secondary">{{ mailing.status }}</p>
+            <p class="card-subtitle mb-2 text-body-secondary">{{ mailing.get_status_display }}</p>
             <a href="{% url 'mailing:mailing_detail' mailing.pk %}" class="card-link">Подробнее</a>
             <form method="post" action="{% url 'mailing:mailing_run' mailing.pk %}">
                 {% csrf_token %}

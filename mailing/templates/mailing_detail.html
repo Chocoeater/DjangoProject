@@ -29,7 +29,9 @@
     <div class="col">
         <a href="{% url 'mailing:mailings_list' %}" type="button" class="btn btn-light">Назад</a>
         <a href="{% url 'mailing:mailing_update' mailing.pk %}" type="button" class="btn btn-warning">Редактировать</a>
+        {% if perms.mailing.delete_mailing %}
         <a href="{% url 'mailing:mailing_delete' mailing.pk %}" type="button" class="btn btn-danger">Удалить</a>
+        {% endif %}
     </div>
     <div class="col-4"></div>
 </div>
