@@ -26,24 +26,23 @@
         <div class="card-body">
             <h2 class="card-title">{{ mailing.message.subject }}</h2>
             {% for rec in mailing.recipient.all %}
-            <h5 class="card-title">{{ rec.full_name }}</h5>
+                <h5 class="card-title">{{ rec.full_name }}</h5>
             {% endfor %}
             <p class="card-subtitle mb-2 text-body-secondary">{{ mailing.get_status_display }}</p>
-            <a href="{% url 'mailing:mailing_detail' mailing.pk %}" class="card-link">Подробнее</a>
-            <form method="post" action="{% url 'mailing:mailing_run' mailing.pk %}">
-                {% csrf_token %}
-                <button type="submit" class="card-link"
-                        style="background:none; border:none; padding:0; color:blue; text-decoration:underline; cursor:pointer;">
-                    Запустить
-                </button>
-            </form>
-            <form method="post" action="{% url 'mailing:mailing_status_update' mailing.pk %}">
-                {% csrf_token %}
-                <button type="submit" class="card-link"
-                        style="background:none; border:none; padding:0; color:blue; text-decoration:underline; cursor:pointer;">
-                    Обновить статус
-                </button>
-            </form>
+            <div class="text-center">
+                <a href="{% url 'mailing:mailing_detail' mailing.pk %}" class="card-link">Подробнее</a>
+                {% if mailing.status == 'ended' or request.user.is_superuser or perms.mailing.can_blocked %}
+                    <a href="{% url 'mailing:mailing_restart' mailing.pk %}" class="card-link">Возобновить</a>
+                {% endif %}
+                {% if mailing.status != 'ended' and mailing.status != 'stopped' %}
+                    {% if request.user.is_superuser or perms.mailing.can_blocked %}
+                        <form method="post" action="{% url 'mailing:mailing_stop' mailing.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link">Остановить принудительно</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
     {% endfor %}

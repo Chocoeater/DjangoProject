@@ -5,15 +5,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.views import View
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView, ListView, TemplateView
 from django.views.generic.edit import DeleteView, UpdateView
 
-from mailing.forms import MailingForm, MessageForm, RecipientForm, BlockMailingForm
+from mailing.forms import MailingForm, MessageForm, RecipientForm, RestartMailingForm
 from mailing.mixins import OwnerOrManagerPermMixin
 from mailing.models import Attempt, Mailing, Message, Recipient
 
@@ -127,14 +125,7 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
 class MailingUpdateView(LoginRequiredMixin, OwnerOrManagerPermMixin, UpdateView):
     model = Mailing
     template_name = "mailing_update.html"
-
-    def get_form_class(self):
-        user = self.request.user
-        if user.is_superuser or user == self.object.owner:
-            return MailingForm
-        if user.has_perm("mailing.can_blocked"):
-            return BlockMailingForm
-        raise PermissionDenied
+    form_class = MailingForm
 
     def get_success_url(self):
         return reverse("mailing:mailing_detail", kwargs={"pk": self.object.pk})
@@ -146,28 +137,42 @@ class MailingDeleteView(LoginRequiredMixin, OwnerOrManagerPermMixin, DeleteView)
     template_name = "mailing_delete.html"
     success_url = reverse_lazy("mailing:mailings_list")
 
+class MailingRestartView(LoginRequiredMixin,OwnerOrManagerPermMixin, UpdateView):
+    model = Mailing
+    base_perm = 'update'
+    template_name = 'mailing_restart.html'
+    form_class = RestartMailingForm
+    success_url = reverse_lazy('mailing:mailings_list')
 
-@require_POST
-def mailing_run_view(request, pk):
-    mailing = get_object_or_404(Mailing, pk=pk)
-
-    if mailing.status != "started":
-        mailing.start_time = timezone.now()
-        mailing.end_time = mailing.start_time + timedelta(minutes=2)
-        mailing.save()
-        mailing.send()
-        messages.success(request, "Рассылка запущена!")
-    else:
-        messages.warning(request, "Рассылка уже запущена!")
-    return redirect("mailing:mailings_list")
+    def form_valid(self, form):
+        form.instance.status = 'created'
+        return super().form_valid(form)
 
 
-@require_POST
-def mailing_update_status_view(request, pk):
-    mailing = get_object_or_404(Mailing, pk=pk)
-    mailing.save()
-    messages.success(request, "Готово!")
-    return redirect("mailing:mailings_list")
+
+
+
+# @require_POST
+# def mailing_run_view(request, pk):
+#     mailing = get_object_or_404(Mailing, pk=pk)
+#
+#     if mailing.status != "started":
+#         mailing.start_time = timezone.now()
+#         mailing.end_time = mailing.start_time + timedelta(minutes=2)
+#         mailing.save()
+#         mailing.send()
+#         messages.success(request, "Рассылка запущена!")
+#     else:
+#         messages.warning(request, "Рассылка уже запущена!")
+#     return redirect("mailing:mailings_list")
+#
+#
+# @require_POST
+# def mailing_update_status_view(request, pk):
+#     mailing = get_object_or_404(Mailing, pk=pk)
+#     mailing.save()
+#     messages.success(request, "Готово!")
+#     return redirect("mailing:mailings_list")
 
 
 class AttemptListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
@@ -191,3 +196,15 @@ class MianPageView(LoginRequiredMixin, TemplateView):
             context["total_active"] = Mailing.objects.filter(status="started", owner=user).count()
             context["recipients"] = Recipient.objects.filter(owner=user).count()
         return context
+
+
+@require_POST
+def hand_stop_mailing(request, pk):
+    mailing = get_object_or_404(Mailing, pk=pk)
+    user = request.user
+
+    if mailing.status != 'ended' and (user.is_superuser or user.has_perm('mailing.can_blocked')):
+        mailing.status = 'stopped'
+        mailing.save()
+
+    return redirect("mailing:mailings_list")

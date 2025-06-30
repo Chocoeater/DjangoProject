@@ -70,22 +70,6 @@ class Mailing(models.Model):
     recipient = models.ManyToManyField("Recipient", verbose_name="Получатели")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время создания')
 
-    def update_status(self):
-        if self.status == 'stopped':
-            return
-
-        now = timezone.now()
-        if self.start_time <= now <= self.end_time:
-            self.status = "started"
-        elif now > self.end_time:
-            self.status = "ended"
-        else:
-            self.status = "created"
-
-    # Для автоматического обновления статуса
-    def save(self, *args, **kwargs):
-        self.update_status()
-        super().save(*args, **kwargs)
 
     def send(self):
         connection = get_connection()
@@ -98,22 +82,22 @@ class Mailing(models.Model):
                 connection=connection,
             )
 
-        try:
-            email.send()
-            Attempt.objects.create(
-                mailing=self,
-                status="success",
-                answer_post_server="Письмо успешно отправлено",
-                owner=self.owner
-            )
-        except SMTPException as e:
-            Attempt.objects.create(
-                mailing=self, status="fail", answer_post_server=str(e), owner=self.owner
-            )
-        except Exception as e:
-            Attempt.objects.create(
-                mailing=self, status="fail", answer_post_server=str(e), owner=self.owner
-            )
+            try:
+                email.send()
+                Attempt.objects.create(
+                    mailing=self,
+                    status="success",
+                    answer_post_server="Письмо успешно отправлено",
+                    owner=self.owner
+                )
+            except SMTPException as e:
+                Attempt.objects.create(
+                    mailing=self, status="fail", answer_post_server=str(e), owner=self.owner
+                )
+            except Exception as e:
+                Attempt.objects.create(
+                    mailing=self, status="fail", answer_post_server=str(e), owner=self.owner
+                )
 
 
 class Attempt(models.Model):
