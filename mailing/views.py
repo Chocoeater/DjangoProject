@@ -1,12 +1,8 @@
-from datetime import timedelta
-
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView, ListView, TemplateView
 from django.views.generic.edit import DeleteView, UpdateView
@@ -63,7 +59,7 @@ class MessageListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
     template_name = "message_list.html"
     context_object_name = "messages"
 
-@method_decorator(cache_page(60 * 5), name="dispatch")
+@method_decorator(cache_control(public=True, max_age=60 * 5), name="dispatch")
 class MessageDetailView(LoginRequiredMixin, OwnerOrManagerPermMixin, DetailView):
     model = Message
     template_name = "message_detail.html"
@@ -105,7 +101,7 @@ class MailingListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
     context_object_name = "mailings"
     ordering = 'created_at'
 
-@method_decorator(cache_page(60 * 5), name="dispatch")
+@method_decorator(cache_control(public=True, max_age=60 * 5), name="dispatch")
 class MailingDetailView(LoginRequiredMixin, OwnerOrManagerPermMixin, DetailView):
     model = Mailing
     template_name = "mailing_detail.html"
@@ -147,32 +143,6 @@ class MailingRestartView(LoginRequiredMixin,OwnerOrManagerPermMixin, UpdateView)
     def form_valid(self, form):
         form.instance.status = 'created'
         return super().form_valid(form)
-
-
-
-
-
-# @require_POST
-# def mailing_run_view(request, pk):
-#     mailing = get_object_or_404(Mailing, pk=pk)
-#
-#     if mailing.status != "started":
-#         mailing.start_time = timezone.now()
-#         mailing.end_time = mailing.start_time + timedelta(minutes=2)
-#         mailing.save()
-#         mailing.send()
-#         messages.success(request, "Рассылка запущена!")
-#     else:
-#         messages.warning(request, "Рассылка уже запущена!")
-#     return redirect("mailing:mailings_list")
-#
-#
-# @require_POST
-# def mailing_update_status_view(request, pk):
-#     mailing = get_object_or_404(Mailing, pk=pk)
-#     mailing.save()
-#     messages.success(request, "Готово!")
-#     return redirect("mailing:mailings_list")
 
 
 class AttemptListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
