@@ -1,13 +1,16 @@
 from django.conf import settings
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views import View
-from django.views.generic import CreateView, DetailView, UpdateView, ListView
 
+
+from django.views import View
+
+from django.views.generic import CreateView, DetailView, UpdateView, ListView
 from users.forms import (CustomLoginForm, CustomUserChangeForm, CustomUserCreationForm)
 from users.mixins import OwnerOrSuperPermMixin
 from users.models import User
@@ -60,14 +63,20 @@ class ProfileUserView(DetailView):
     template_name = "user_detail.html"
 
     def get_object(self, queryset=None):
+        user_id = self.kwargs['pk']
         obj = super().get_object(queryset)
         user = self.request.user
         perm = f'{obj._meta.app_label}.view_{obj._meta.model_name}'
 
         if user.is_superuser or user.has_perm(perm) or user == obj:
-            return obj
+            return cache.get_or_set(        # Кэшируем объект (профиль пользователя)
+                f'user_detail:{user_id}',
+                obj,
+                timeout=60 * 5
+            )
         else:
             raise PermissionDenied
+
 
 class UserListView(ListView):
     model = User
@@ -82,6 +91,8 @@ class UserListView(ListView):
             return User.objects.exclude(pk=user.pk).order_by('pk')
         else:
             raise PermissionDenied
+
+
 
 class UserStatusToggle(View):
     def post(self, request, pk):
