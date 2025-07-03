@@ -1,36 +1,36 @@
 [
 {
     "model": "users.user",
-    "pk": 1,
+    "pk": 15,
     "fields": {
-        "password": "pbkdf2_sha256$1000000$Vi71xjE2Kx09WS3nZxkSwI$PNLxkqgjkptSAcyPOgzYyV9Ar8LIhnTDBbjfKMSstS0=",
-        "last_login": "2025-06-12T14:15:36.705Z",
+        "password": "pbkdf2_sha256$1000000$8otsU0IsrYFAvVPt0drX5k$cA/9QR8pNxRt0k6PfwuhFMd/RWAxWH9RIyG3z0RTxPk=",
+        "last_login": null,
         "is_superuser": true,
         "first_name": "",
         "last_name": "",
         "is_staff": true,
         "is_active": true,
-        "date_joined": "2025-06-10T18:38:03.032Z",
+        "date_joined": "2025-07-03T16:51:35.366Z",
         "email": "admin@mail.ru",
         "avatar": "",
         "phone": null,
-        "country": "Россия",
+        "country": "admin",
         "groups": [],
         "user_permissions": []
     }
 },
 {
     "model": "users.user",
-    "pk": 10,
+    "pk": 16,
     "fields": {
-        "password": "pbkdf2_sha256$1000000$Po8srcQEebX5TwdlNNZ5ji$CoCGtJuJLXcWZFsZEj5HzrywXvRyMojVqsgN4XyVflk=",
+        "password": "pbkdf2_sha256$1000000$BqA2qEHjhoxaik3kKPenFg$XHugrgeElAM7Xla1rLXNgpsR5P5lMMbGWWD0zbJs070=",
         "last_login": null,
         "is_superuser": false,
         "first_name": "",
         "last_name": "",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2025-06-12T14:39:26.023Z",
+        "date_joined": "2025-07-03T16:51:53.155Z",
         "email": "contentmanager@mail.ru",
         "avatar": "",
         "phone": null,
@@ -43,16 +43,38 @@
 },
 {
     "model": "users.user",
-    "pk": 11,
+    "pk": 17,
     "fields": {
-        "password": "pbkdf2_sha256$1000000$p1Kj32uJZaBfir0H3RKsKM$ghhueQ0pUsXcZfajU42IP7Uw/hZitplOpvrIIDJoEDM=",
+        "password": "pbkdf2_sha256$1000000$OjOS7eYxXj9E48wwlPiddd$vWGtPo8l4S44WGFO3GBuUkP1xOyneoOjYNhTRv/vGRE=",
         "last_login": null,
         "is_superuser": false,
         "first_name": "",
         "last_name": "",
         "is_staff": false,
         "is_active": true,
-        "date_joined": "2025-06-12T14:39:42.868Z",
+        "date_joined": "2025-07-03T16:52:03.898Z",
+        "email": "nailingmanager@mail.ru",
+        "avatar": "",
+        "phone": null,
+        "country": "ru",
+        "groups": [
+            3
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 18,
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$cPHFNlpjLjNBxQ88bVlQgB$eWCl+86cbjK6iyvBO6SuW84v+5tus4/2SW0jI3BdaXE=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-07-03T16:52:13.583Z",
         "email": "moderator@mail.ru",
         "avatar": "",
         "phone": null,
