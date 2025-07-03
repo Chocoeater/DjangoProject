@@ -1,0 +1,43 @@
+[
+{
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+        "name": "Модераторы",
+        "permissions": [
+            3,
+            57,
+            31
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+        "name": "Контент-менеджер",
+        "permissions": [
+            33,
+            34,
+            35,
+            36
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 3,
+    "fields": {
+        "name": "Менеджер рассылок",
+        "permissions": [
+            52,
+            58,
+            48,
+            40,
+            44,
+            59,
+            56
+        ]
+    }
+}
+]
