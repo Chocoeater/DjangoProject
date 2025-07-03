@@ -13,7 +13,7 @@ class OwnerOrSuperPermMixin(UserPassesTestMixin):
         if user.is_superuser:
             return True
 
-        if hasattr(self, 'get_object'):
+        if hasattr(self, "get_object"):
             obj = self.get_object()
             if obj == user:
                 return True
@@ -21,4 +21,4 @@ class OwnerOrSuperPermMixin(UserPassesTestMixin):
         return False
 
     def handle_no_permission(self):
-        raise PermissionDenied('Доступ запрещен')
+        raise PermissionDenied("Доступ запрещен")

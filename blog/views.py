@@ -1,12 +1,11 @@
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.urls.base import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from blog.mixins import ContentManagerPermMixin
 
 from blog.forms import BlogRecordForm
+from blog.mixins import ContentManagerPermMixin
 from blog.models import BlogRecord
 
 # Create your views here.
@@ -66,4 +65,3 @@ class BlogRecordDeleteView(ContentManagerPermMixin, DeleteView):
     model = BlogRecord
     template_name = "record_delete.html"
     success_url = reverse_lazy("blog:records_list")
-

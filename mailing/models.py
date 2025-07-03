@@ -3,15 +3,14 @@ from smtplib import SMTPException
 from django.conf import settings
 from django.core.mail import EmailMessage, get_connection
 from django.db import models
-from django.utils import timezone
 
 # Create your models here.
 
 
 class Recipient(models.Model):
     class Meta:
-        verbose_name = 'Получатель-клиент'
-        verbose_name_plural = 'Получатели-клиенты'
+        verbose_name = "Получатель-клиент"
+        verbose_name_plural = "Получатели-клиенты"
 
     email = models.EmailField(
         unique=True,
@@ -29,27 +28,39 @@ class Recipient(models.Model):
         null=True,
         blank=True,
     )
-    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='recipients', verbose_name='Владелец')
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="recipients",
+        verbose_name="Владелец",
+    )
 
 
 class Message(models.Model):
     class Meta:
-        verbose_name = 'Сообщение'
-        verbose_name_plural = 'Сообщения'
+        verbose_name = "Сообщение"
+        verbose_name_plural = "Сообщения"
 
     subject = models.CharField(
         max_length=200, verbose_name="Тема письма", help_text="Введите тему письма"
     )
-    body = models.TextField(verbose_name="Тест письма", help_text="Введите текст письма")
-    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='messages', verbose_name='Владелец')
+    body = models.TextField(
+        verbose_name="Тест письма", help_text="Введите текст письма"
+    )
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="messages",
+        verbose_name="Владелец",
+    )
 
 
 class Mailing(models.Model):
     class Meta:
-        verbose_name = 'Рассылка'
-        verbose_name_plural = 'Рассылки'
+        verbose_name = "Рассылка"
+        verbose_name_plural = "Рассылки"
         permissions = [
-            ('can_blocked', 'Может блокировать'),
+            ("can_blocked", "Может блокировать"),
         ]
 
     STATUS_CHOICES = [
@@ -58,7 +69,12 @@ class Mailing(models.Model):
         ("ended", "Завершена"),
         ("stopped", "Остановлена вручную"),
     ]
-    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='mailings', verbose_name='Владелец')
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="mailings",
+        verbose_name="Владелец",
+    )
     start_time = models.DateTimeField(verbose_name="Время начала")
     end_time = models.DateTimeField(verbose_name="Время окончания")
     status = models.CharField(
@@ -68,8 +84,9 @@ class Mailing(models.Model):
         "Message", on_delete=models.CASCADE, verbose_name="Сообщение"
     )
     recipient = models.ManyToManyField("Recipient", verbose_name="Получатели")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время создания')
-
+    created_at = models.DateTimeField(
+        auto_now_add=True, verbose_name="Дата и время создания"
+    )
 
     def send(self):
         connection = get_connection()
@@ -88,22 +105,28 @@ class Mailing(models.Model):
                     mailing=self,
                     status="success",
                     answer_post_server="Письмо успешно отправлено",
-                    owner=self.owner
+                    owner=self.owner,
                 )
             except SMTPException as e:
                 Attempt.objects.create(
-                    mailing=self, status="fail", answer_post_server=str(e), owner=self.owner
+                    mailing=self,
+                    status="fail",
+                    answer_post_server=str(e),
+                    owner=self.owner,
                 )
             except Exception as e:
                 Attempt.objects.create(
-                    mailing=self, status="fail", answer_post_server=str(e), owner=self.owner
+                    mailing=self,
+                    status="fail",
+                    answer_post_server=str(e),
+                    owner=self.owner,
                 )
 
 
 class Attempt(models.Model):
     class Meta:
-        verbose_name = 'Попытка'
-        verbose_name_plural = 'Попытки'
+        verbose_name = "Попытка"
+        verbose_name_plural = "Попытки"
 
     status_choice = [("success", "Успешно"), ("fail", "Не успешно")]
 
@@ -113,5 +136,9 @@ class Attempt(models.Model):
     mailing = models.ForeignKey(
         "Mailing", verbose_name="Рассылка", on_delete=models.CASCADE
     )
-    owner = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='attempts', verbose_name='Владелец')
-
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="attempts",
+        verbose_name="Владелец",
+    )

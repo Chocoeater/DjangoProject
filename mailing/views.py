@@ -2,12 +2,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page, cache_control
+from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DetailView, ListView, TemplateView
 from django.views.generic.edit import DeleteView, UpdateView
 
-from mailing.forms import MailingForm, MessageForm, RecipientForm, RestartMailingForm
+from mailing.forms import (MailingForm, MessageForm, RecipientForm,
+                           RestartMailingForm)
 from mailing.mixins import OwnerOrManagerPermMixin
 from mailing.models import Attempt, Mailing, Message, Recipient
 
@@ -18,6 +19,7 @@ class RecipientListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
     model = Recipient
     template_name = "recipient_list.html"
     context_object_name = "recipients"
+
 
 @method_decorator(cache_page(60 * 5), name="dispatch")
 class RecipientDetailView(OwnerOrManagerPermMixin, DetailView):
@@ -59,6 +61,7 @@ class MessageListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
     template_name = "message_list.html"
     context_object_name = "messages"
 
+
 @method_decorator(cache_control(public=True, max_age=60 * 5), name="dispatch")
 class MessageDetailView(LoginRequiredMixin, OwnerOrManagerPermMixin, DetailView):
     model = Message
@@ -83,7 +86,6 @@ class MessageUpdateView(LoginRequiredMixin, OwnerOrManagerPermMixin, UpdateView)
     context_object_name = "message"
     form_class = MessageForm
 
-
     def get_success_url(self):
         return reverse("mailing:message", kwargs={"pk": self.object.pk})
 
@@ -99,7 +101,8 @@ class MailingListView(LoginRequiredMixin, OwnerOrManagerPermMixin, ListView):
     model = Mailing
     template_name = "mailings_list.html"
     context_object_name = "mailings"
-    ordering = 'created_at'
+    ordering = "created_at"
+
 
 @method_decorator(cache_control(public=True, max_age=60 * 5), name="dispatch")
 class MailingDetailView(LoginRequiredMixin, OwnerOrManagerPermMixin, DetailView):
@@ -128,20 +131,21 @@ class MailingUpdateView(LoginRequiredMixin, OwnerOrManagerPermMixin, UpdateView)
 
 
 class MailingDeleteView(LoginRequiredMixin, OwnerOrManagerPermMixin, DeleteView):
-    base_perm = 'delete'
+    base_perm = "delete"
     model = Mailing
     template_name = "mailing_delete.html"
     success_url = reverse_lazy("mailing:mailings_list")
 
-class MailingRestartView(LoginRequiredMixin,OwnerOrManagerPermMixin, UpdateView):
+
+class MailingRestartView(LoginRequiredMixin, OwnerOrManagerPermMixin, UpdateView):
     model = Mailing
-    base_perm = 'update'
-    template_name = 'mailing_restart.html'
+    base_perm = "update"
+    template_name = "mailing_restart.html"
     form_class = RestartMailingForm
-    success_url = reverse_lazy('mailing:mailings_list')
+    success_url = reverse_lazy("mailing:mailings_list")
 
     def form_valid(self, form):
-        form.instance.status = 'created'
+        form.instance.status = "created"
         return super().form_valid(form)
 
 
@@ -163,7 +167,9 @@ class MianPageView(LoginRequiredMixin, TemplateView):
             context["recipients"] = Recipient.objects.count()
         else:
             context["total_mailings"] = Mailing.objects.filter(owner=user).count()
-            context["total_active"] = Mailing.objects.filter(status="started", owner=user).count()
+            context["total_active"] = Mailing.objects.filter(
+                status="started", owner=user
+            ).count()
             context["recipients"] = Recipient.objects.filter(owner=user).count()
         return context
 
@@ -173,8 +179,10 @@ def hand_stop_mailing(request, pk):
     mailing = get_object_or_404(Mailing, pk=pk)
     user = request.user
 
-    if mailing.status != 'ended' and (user.is_superuser or user.has_perm('mailing.can_blocked')):
-        mailing.status = 'stopped'
+    if mailing.status != "ended" and (
+        user.is_superuser or user.has_perm("mailing.can_blocked")
+    ):
+        mailing.status = "stopped"
         mailing.save()
 
     return redirect("mailing:mailings_list")

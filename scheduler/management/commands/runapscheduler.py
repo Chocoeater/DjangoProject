@@ -7,15 +7,17 @@ from django_apscheduler.jobstores import DjangoJobStore
 import logging
 from mailing.jobs import send_scheduler_mailings
 
+
 logger = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     logger.info("Запускается планировщик...")
     help = 'Запуск планировщика задач'
 
     def handle(self, *args, **options):
-        scheduler = BackgroundScheduler(timezone='Europe/Moscow') # Фоновый планировщик
-        scheduler.add_jobstore(DjangoJobStore(), 'default') # Django-хранилище для задач
+        scheduler = BackgroundScheduler(timezone='Europe/Moscow')  # Фоновый планировщик
+        scheduler.add_jobstore(DjangoJobStore(), 'default')  # Django-хранилище для задач
 
         scheduler.add_job(
             send_scheduler_mailings,
@@ -31,5 +33,3 @@ class Command(BaseCommand):
                 time.sleep(5)
         except (KeyboardInterrupt, SystemExit):
             scheduler.shutdown()
-
-

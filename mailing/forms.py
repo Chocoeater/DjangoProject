@@ -67,7 +67,7 @@ class MailingForm(forms.ModelForm):
 class RestartMailingForm(forms.ModelForm):
     class Meta:
         model = Mailing
-        fields = ['start_time', 'end_time']
+        fields = ["start_time", "end_time"]
         widgets = {
             "start_time": forms.DateTimeInput(
                 attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
@@ -79,9 +79,5 @@ class RestartMailingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["start_time"].widget.attrs.update(
-            {"class": "form-control"}
-        )
-        self.fields["end_time"].widget.attrs.update(
-            {"class": "form-control"}
-        )
+        self.fields["start_time"].widget.attrs.update({"class": "form-control"})
+        self.fields["end_time"].widget.attrs.update({"class": "form-control"})

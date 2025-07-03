@@ -1,6 +1,3 @@
-from catalog.models import Category, Product
-
-
 class ProductService:
 
     @staticmethod
