@@ -41,16 +41,34 @@ poetry run python manage.py migrate
 ```
 
 # Запуск сервера разработки
-poetry run python manage.py runserver
 
-# Создание суперпользователя
+**ВАЖНО! Перед запуском сервера необходимо запустить сервер Redis!**
+```commandline
+poetry run python manage.py runserver
+```
+
+# Создание тестовых пользователей
+
+
 ```commandline
 poetry run python manage.py create_admin
 ```
 
-# Запуск планировщика
+Остальных пользователей можно создать либо через функционал регистрации с последующей выдачей необходимый прав,
+если потребуется, либо при помощи загрузки готовых фикстур (для теста):
+
 ```commandline
-poetry run python manage.py runscheduler
+python manage.py loaddata group_fixture.json
+python manage.py loaddata users_fixture.json
+```
+
+Также существуют другие фикстуры, которые можно найти в корне проекта.
+
+# Запуск планировщика
+Осуществляется через кастомную команду:
+
+```commandline
+poetry run python manage.py runapscheduler
 ```
 
 # Требования к окружению
