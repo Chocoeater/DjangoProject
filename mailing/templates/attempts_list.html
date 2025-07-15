@@ -16,6 +16,7 @@
                 <th scope="col">Ответ почтового сервера</th>
                 <th scope="col">ID рассылки</th>
                 <th scope="col">Тема рассылки</th>
+                <th scope="col">Владелец</th>
             </tr>
             </thead>
             <tbody>
@@ -27,6 +28,9 @@
                 <td>{{attempt.answer_post_server}}</td>
                 <td>{{attempt.mailing.pk}}</td>
                 <td>{{attempt.mailing.message.subject}}</td>
+                {% if user.is_superuser or perms.mailing.view_attempt %}
+                    <td>{{attempt.mailing.owner}}</td>
+                {% endif %}
             </tr>
             {% endfor %}
             </tbody>

@@ -62,3 +62,22 @@ class MailingForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["recipient"].label_from_instance = lambda obj: obj.full_name
         self.fields["message"].label_from_instance = lambda obj: obj.subject
+
+
+class RestartMailingForm(forms.ModelForm):
+    class Meta:
+        model = Mailing
+        fields = ["start_time", "end_time"]
+        widgets = {
+            "start_time": forms.DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
+            "end_time": forms.DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["start_time"].widget.attrs.update({"class": "form-control"})
+        self.fields["end_time"].widget.attrs.update({"class": "form-control"})

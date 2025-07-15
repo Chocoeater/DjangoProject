@@ -12,22 +12,27 @@
             {% endfor %}
         </div>
         <ul class="list-group list-group-flush">
-            <li class="list-group-item">{{ mailing.start_time }}</li>
-            <li class="list-group-item">{{ mailing.end_time }}</li>
-            <li class="list-group-item">{{ mailing.status }}</li>
-            <li class="list-group-item">{{ mailing.message.subject }}</li>
-            <li class="list-group-item">{{ mailing.message.body }}</li>
+            <li class="list-group-item">Время начала рассылки: {{ mailing.start_time }}</li>
+            <li class="list-group-item">Время окончания рассылки: {{ mailing.end_time }}</li>
+            <li class="list-group-item">Статус рассылки: {{ mailing.status }}</li>
+            <li class="list-group-item">Тема сообщения: {{ mailing.message.subject }}</li>
+            <li class="list-group-item">Тело сообщения: {{ mailing.message.body }}</li>
+            {% if user.is_superuser or perms.mailing.view_mailing %}
+                <li class="list-group-item">Владелец: {{ mailing.owner }}</li>
+            {% endif %}
         </ul>
     </div>
     <div class="col-2"></div>
 </div>
 <div class="row text-center mt-3">
-    <div class="col-5"></div>
+    <div class="col-4"></div>
     <div class="col">
         <a href="{% url 'mailing:mailings_list' %}" type="button" class="btn btn-light">Назад</a>
         <a href="{% url 'mailing:mailing_update' mailing.pk %}" type="button" class="btn btn-warning">Редактировать</a>
+        {% if perms.mailing.delete_mailing %}
         <a href="{% url 'mailing:mailing_delete' mailing.pk %}" type="button" class="btn btn-danger">Удалить</a>
+        {% endif %}
     </div>
-    <div class="col-5"></div>
+    <div class="col-4"></div>
 </div>
 {% endblock %}

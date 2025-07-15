@@ -12,17 +12,20 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">{{ recipient.email }}</li>
             <li class="list-group-item">{{ recipient.comment | default:"Комментарий отсутствует" }}</li>
+            {% if user.is_superuser or perms.mailing.view_recipient %}
+                <li class="list-group-item">Владелец: {{ recipient.owner }}</li>
+            {% endif %}
         </ul>
     </div>
     <div class="col-2"></div>
 </div>
 <div class="row text-center mt-3">
-    <div class="col-5"></div>
+    <div class="col-4"></div>
     <div class="col">
         <a href="{% url 'mailing:recipients_list' %}" type="button" class="btn btn-light">Назад</a>
         <a href="{% url 'mailing:recipient_update' recipient.pk %}" type="button" class="btn btn-warning">Редактировать</a>
         <a href="{% url 'mailing:recipient_delete' recipient.pk %}" type="button" class="btn btn-danger">Удалить</a>
     </div>
-    <div class="col-5"></div>
+    <div class="col-4"></div>
 </div>
 {% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title%}Пароль сброшен{% endblock %}
+{% block content %}
+<div class="row text-center">
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <h4 class="text-success">Вам на почту отправлена ссылка для восстановления пароля!</h4>
+            <a href="{% url 'catalog:product_list' %}" class="btn btn-primary mt-4">На главную</a>
+        </div>
+        <div class="col-2"></div>
+    </div>
+</div>
+{% endblock %}

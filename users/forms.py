@@ -1,4 +1,5 @@
-from django.contrib.auth.forms import (AuthenticationForm, UserChangeForm,
+from django.contrib.auth.forms import (AuthenticationForm, PasswordResetForm,
+                                       SetPasswordForm, UserChangeForm,
                                        UserCreationForm)
 
 from users.models import User
@@ -40,3 +41,24 @@ class CustomUserChangeForm(UserChangeForm):
             field.widget.attrs.update({"class": "form-control"})
 
     password = None
+
+
+class CustomResetPasswordForm(PasswordResetForm):
+    class Meta:
+        model = User
+        fields = ["email"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({"class": "form-control"})
+
+
+class CustomSetPasswordForm(SetPasswordForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({"class": "form-control"})
+        self.fields["new_password1"].label = "Новый пароль"
+        self.fields["new_password2"].label = "Повторите новый пароль"

@@ -1,5 +1,3 @@
-
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
@@ -66,8 +64,10 @@ class ProductListView(ListView):
         category_id = self.request.GET.get("category_id")
         page = self.request.GET.get("page", 1)
 
-        cache_key = (f'prod_qs_user_{user.pk if user.is_authenticated else "anonim"}_cat_'
-                     f'{category_id if category_id else "all"}_page_{page}')
+        cache_key = (
+            f'prod_qs_user_{user.pk if user.is_authenticated else "anonim"}_cat_'
+            f'{category_id if category_id else "all"}_page_{page}'
+        )
 
         queryset = cache.get(cache_key)
         if queryset:
@@ -108,7 +108,7 @@ class ProductListView(ListView):
         return context
 
 
-@method_decorator(cache_page(60 * 15), name="dispatch")
+@method_decorator(cache_page(60 * 5), name="dispatch")
 class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = "product_detail.html"
